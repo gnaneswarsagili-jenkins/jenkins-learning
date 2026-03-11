@@ -1,2 +1,5 @@
-# jenkins-learning
-Repository for learning Jenkins CI/CD
+# Jenkins Learning Repository
+
+This repository is created for learning Jenkins CI/CD pipelines.
+
+Created by: Gnaneswar
