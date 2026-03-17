@@ -2,21 +2,12 @@ pipeline {
     agent any
 
     stages {
-        stage('Build') {
+        stage('Use Credential') {
             steps {
-                echo 'Build stage running'
-            }
-        }
-
-        stage('Test') {
-            steps {
-                bat 'exit /b 1'
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                echo 'Deploy stage running'
+                withCredentials([usernamePassword(credentialsId: 'demo-credential', usernameVariable: 'USR', passwordVariable: 'PWD')]) {
+                    bat 'echo Username is %USR%'
+                    bat 'echo Password is masked by Jenkins'
+                }
             }
         }
     }
@@ -24,12 +15,6 @@ pipeline {
     post {
         always {
             echo 'Pipeline completed'
-        }
-        success {
-            echo 'Pipeline succeeded'
-        }
-        failure {
-            echo 'Pipeline Failed'
         }
     }
 }
