@@ -2,24 +2,22 @@ pipeline {
     agent any
 
     stages {
-
         stage('Build') {
             steps {
-                echo 'Building application from GitHub repository'
+                echo 'Build stage running'
             }
         }
 
         stage('Test') {
             steps {
-                echo 'Running tests'
+                bat 'exit /b 1'
             }
         }
 
         stage('Deploy') {
             steps {
-                echo 'Deploying application'
+                echo 'Deploy stage running'
             }
         }
-
     }
 }
