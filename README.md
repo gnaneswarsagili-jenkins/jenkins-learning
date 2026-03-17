@@ -2,6 +2,6 @@
 
 This repository is created for learning Jenkins CI/CD pipelines.
 
-TESTING JENKINS AUTO TRIGGER
+Testing Jenkins auto trigger
 
 Created by: Gnaneswar
