@@ -3,22 +3,79 @@ pipeline {
 
     parameters {
         string(name: 'PACKAGE_NAME', defaultValue: 'sample_package.zip', description: 'Migration package name')
-        choice(name: 'SOURCE_ENV', choices: ['DEV'], description: 'Source environment')
-        choice(name: 'TARGET_ENV', choices: ['TEST'], description: 'Target environment')
     }
 
     stages {
-        stage('Checkout Info') {
+
+        stage('Export Package (DEV)') {
             steps {
-                echo "Package: ${params.PACKAGE_NAME}"
-                echo "Source: ${params.SOURCE_ENV}"
-                echo "Target: ${params.TARGET_ENV}"
+                echo "Exporting package ${params.PACKAGE_NAME} from DEV..."
             }
         }
 
-        stage('Simulate Remote Deployment') {
+        stage('Validate Export') {
             steps {
-                bat 'remote_deploy_simulation.bat'
+                echo "Validating export of ${params.PACKAGE_NAME}..."
+            }
+        }
+
+        stage('Transfer Package') {
+            steps {
+                echo "Transferring ${params.PACKAGE_NAME} to TEST server..."
+            }
+        }
+
+        stage('Import Package (TEST)') {
+            steps {
+                echo "Importing ${params.PACKAGE_NAME} in TEST..."
+            }
+        }
+
+        stage('Validate Import') {
+            steps {
+                echo "Validating import..."
+            }
+        }
+
+        stage('Stop Siebel Server') {
+            steps {
+                bat '''
+                echo ssh siebel@test-server
+                echo stop_server all
+                '''
+            }
+        }
+
+        stage('Validate Shutdown') {
+            steps {
+                bat '''
+                echo ps -ef ^| grep [s]hm ^| wc -l
+                echo Simulated count = 1
+                '''
+                echo 'Shutdown validation passed'
+            }
+        }
+
+        stage('Start Siebel Server') {
+            steps {
+                bat '''
+                echo start_server all
+                '''
+            }
+        }
+
+        stage('Validate Startup') {
+            steps {
+                bat '''
+                echo Validating startup...
+                '''
+                echo 'Startup validation passed'
+            }
+        }
+
+        stage('Post Deployment Checks') {
+            steps {
+                echo "Final validation for ${params.PACKAGE_NAME}"
             }
         }
     }
@@ -28,10 +85,10 @@ pipeline {
             echo 'Pipeline completed'
         }
         success {
-            echo 'Pipeline succeeded'
+            echo 'Deployment SUCCESS'
         }
         failure {
-            echo 'Pipeline failed'
+            echo 'Deployment FAILED'
         }
     }
 }
