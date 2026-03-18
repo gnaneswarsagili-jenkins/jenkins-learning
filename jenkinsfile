@@ -8,65 +8,17 @@ pipeline {
     }
 
     stages {
-        stage('Check Export Package') {
+        stage('Checkout Info') {
             steps {
-                echo "Checking exported migration package ${params.PACKAGE_NAME} from ${params.SOURCE_ENV}..."
+                echo "Package: ${params.PACKAGE_NAME}"
+                echo "Source: ${params.SOURCE_ENV}"
+                echo "Target: ${params.TARGET_ENV}"
             }
         }
 
-        stage('Copy Package to Test') {
+        stage('Run Deployment Script') {
             steps {
-                echo "Copying migration package ${params.PACKAGE_NAME} from ${params.SOURCE_ENV} to ${params.TARGET_ENV}..."
-            }
-        }
-
-        stage('Import Package') {
-            steps {
-                echo "Executing migration import plan for package ${params.PACKAGE_NAME} in ${params.TARGET_ENV}..."
-            }
-        }
-
-        stage('Stop Siebel Server') {
-            steps {
-                bat '''
-                echo cd /siebel/ip17/sies/siebsrvr
-                echo . ./siebenv.sh
-                echo stop_server all
-                '''
-            }
-        }
-
-        stage('Validate Shutdown') {
-            steps {
-                bat '''
-                echo Running validation: ps -ef ^| grep [s]hm ^| wc -l
-                echo Simulated process count after stop = 1
-                '''
-                echo 'Shutdown validation passed. Safe to continue.'
-            }
-        }
-
-        stage('Start Siebel Server') {
-            steps {
-                bat '''
-                echo start_server all
-                '''
-            }
-        }
-
-        stage('Validate Startup') {
-            steps {
-                bat '''
-                echo Validating startup status...
-                echo Simulated startup validation successful
-                '''
-                echo 'Startup validation passed.'
-            }
-        }
-
-        stage('Post Deployment Validation') {
-            steps {
-                echo "Deployment validation completed for ${params.PACKAGE_NAME} in ${params.TARGET_ENV}."
+                bat 'deploy_simulation.bat'
             }
         }
     }
